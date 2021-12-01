@@ -1,0 +1,15 @@
+{
+  "name": "YouTube views-to-likes ratio",
+  "description": "Extension that enables to see views-to-likes ratio on YouTube videos",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"], "js": ["content.js"], "run_at": "document_end"
+    }
+  ],
+  "permissions": ["activeTab", "scripting"]
+}
