@@ -1,51 +1,50 @@
-// Cater for direct transition to next video, i.e. simple click on next video's thumbnail
-window.addEventListener('yt-page-data-updated', function () {
-  console.log('url change');
+(async () => {
+  const API_KEY = 'AIzaSyBcS5qRg5AJXDrZneCtDYGgibl2LnDB9y4'
+  const API_URL = `https://www.googleapis.com/youtube/v3/videos?part=statistics&key=${API_KEY}`
+  
 
-  setTimeout(() => {
-    const ratio = calculateRatio()
-    console.log({MYRATIO: ratio})
-    insertRatio(ratio)
-  }, 2000)
-});
+  await doLogic()
+
+  window.addEventListener('yt-page-data-updated', doLogic)
 
 
-function insertRatio(ratio) {
-  const topButtonsContainer = document.querySelector('#buttons')
-
-  topButtonsContainer.insertAdjacentHTML('beforeend', `<span>RAT: ${ratio}</span>`)
-}
-
-function calculateRatio() {
-  const viewsRaw = document.querySelector('.view-count').textContent
-  const views = Number(viewsRaw.replace(/\D/g, ''));
-
-  let likesRaw = document.querySelector('#text.ytd-toggle-button-renderer').textContent
-  if (likesRaw.includes('тыс')) {
-    // if 7,2 тыс.
-    if (likesRaw.includes(',')) {
-      likesRaw = likesRaw.replace(/\D/g, '')
-      likesRaw += '00'
-      // if 72 тыс.
-    } else {
-      likesRaw = likesRaw.replace(/\D/g, '')
-      likesRaw += '000'
-    }
+  async function doLogic() {
+    const videoId = getVideoId()
+    const likesToDislikesPercent = await getVideoLikesToDislikesPercent(videoId)
+    console.log({likesToDislikesPercent})
+    const topButtonsContainer = await selectElementAfterDelay('#buttons', 2000)
+    console.log({topButtonsContainer})
+    topButtonsContainer.insertAdjacentHTML('beforeend', `<progress value="${likesToDislikesPercent}" style="margin-top: 14px;" max="100"></progress>`)
+    console.log('cool123')
   }
-  if (likesRaw.includes('млн')) {
-    // if 7,2 млн.
-    if (likesRaw.includes(',')) {
-      likesRaw = likesRaw.replace(/\D/g, '')
-      likesRaw += '00000'
-      // if 72 млн.
-    } else {
-      likesRaw = likesRaw.replace(/\D/g, '')
-      likesRaw += '000000'
-    }
+
+  function getVideoId() {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const params = Object.fromEntries(urlSearchParams.entries());
+    const videoId = params.v
+
+    return videoId
   }
-  const likes = Number(likesRaw)
 
-  const ratio = (likes * 100 / views).toFixed(1)
+  async function getVideoLikesToDislikesPercent(videoId) {
+    let response = await fetch(API_URL + `&id=${videoId}`)
+    response = await response.json()
 
-  return ratio
-}
+    const { likeCount, dislikeCount } = response.items[0].statistics
+
+    const likesAndDislikesSum = Number(likeCount) + Number(dislikeCount)
+    const likesToDislikesPercent = likeCount * 100 / likesAndDislikesSum
+
+    return likesToDislikesPercent
+  }
+
+  async function selectElementAfterDelay(selector, delay) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const element = document.querySelector(selector)
+
+        resolve(element)
+      }, delay)
+    })
+  }
+})()
