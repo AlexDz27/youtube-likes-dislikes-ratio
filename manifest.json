@@ -1,6 +1,6 @@
 {
-  "name": "YouTube views-to-likes ratio",
-  "description": "Extension that enables to see views-to-likes ratio on YouTube videos",
+  "name": "YouTube likes-dislikes ratio",
+  "description": "Extension that enables to see likes-dislikes ratio in YouTube videos",
   "version": "1.0",
   "manifest_version": 3,
   "content_scripts": [
