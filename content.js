@@ -1,5 +1,5 @@
 (async () => {
-  const API_KEY = 'AIzaSyBcS5qRg5AJXDrZneCtDYGgibl2LnDB9y4'
+  const API_KEY = 'YOUR_API_KEY'
   const API_URL = `https://www.googleapis.com/youtube/v3/videos?part=statistics&key=${API_KEY}`
   
 
