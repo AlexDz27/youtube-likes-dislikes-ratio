@@ -4,7 +4,6 @@
   
 
   await doLogic()
-
   window.addEventListener('yt-page-data-updated', doLogic)
 
 
@@ -12,9 +11,18 @@
     const videoId = getVideoId()
     const likesToDislikesPercent = await getVideoLikesToDislikesPercent(videoId)
     console.log({likesToDislikesPercent})
-    const topButtonsContainer = await selectElementAfterDelay('#buttons', 2000)
-    console.log({topButtonsContainer})
-    topButtonsContainer.insertAdjacentHTML('beforeend', `<progress value="${likesToDislikesPercent}" style="margin-top: 14px;" max="100"></progress>`)
+
+    const viewCountElementSelector = '.view-count.style-scope.ytd-video-view-count-renderer'
+    await waitUntilElementExists(viewCountElementSelector)
+
+    const container = document.querySelector('#container #info-text')
+    console.log({topButtonsContainer: container})
+    if (document.querySelector('#likesToDislikes')) {
+      document.querySelector('#likesToDislikes').remove()
+    }
+    container.insertAdjacentHTML('beforeend',
+      `<progress id="likesToDislikes" value="${likesToDislikesPercent}" style="margin-left: 15px;" max="100"></progress>`
+    )
     console.log('cool123')
   }
 
@@ -24,6 +32,19 @@
     const videoId = params.v
 
     return videoId
+  }
+
+  async function waitUntilElementExists(selector) {
+    return new Promise((resolve) => {
+      const handle = setInterval(() => {
+        const element = document.querySelector(selector)
+        console.log({element})
+        if (element !== null) {
+          clearInterval(handle)
+          resolve(element)
+        }
+      }, 100)
+    })
   }
 
   async function getVideoLikesToDislikesPercent(videoId) {
@@ -36,15 +57,5 @@
     const likesToDislikesPercent = likeCount * 100 / likesAndDislikesSum
 
     return likesToDislikesPercent
-  }
-
-  async function selectElementAfterDelay(selector, delay) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        const element = document.querySelector(selector)
-
-        resolve(element)
-      }, delay)
-    })
   }
 })()
