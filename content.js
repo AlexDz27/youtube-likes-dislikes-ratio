@@ -10,20 +10,17 @@
   async function doLogic() {
     const videoId = getVideoId()
     const likesToDislikesPercent = await getVideoLikesToDislikesPercent(videoId)
-    console.log({likesToDislikesPercent})
 
     const viewCountElementSelector = '.view-count.style-scope.ytd-video-view-count-renderer'
     await waitUntilElementExists(viewCountElementSelector)
 
     const container = document.querySelector('#container #info-text')
-    console.log({topButtonsContainer: container})
     if (document.querySelector('#likesToDislikes')) {
       document.querySelector('#likesToDislikes').remove()
     }
     container.insertAdjacentHTML('beforeend',
       `<progress id="likesToDislikes" value="${likesToDislikesPercent}" style="margin-left: 15px;" max="100"></progress>`
     )
-    console.log('cool123')
   }
 
   function getVideoId() {
@@ -38,7 +35,6 @@
     return new Promise((resolve) => {
       const handle = setInterval(() => {
         const element = document.querySelector(selector)
-        console.log({element})
         if (element !== null) {
           clearInterval(handle)
           resolve(element)
