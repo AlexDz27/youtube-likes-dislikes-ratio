@@ -1,4 +1,22 @@
-setTimeout(() => {
+// Cater for direct transition to next video, i.e. simple click on next video's thumbnail
+window.addEventListener('yt-page-data-updated', function () {
+  console.log('url change');
+
+  setTimeout(() => {
+    const ratio = calculateRatio()
+    console.log({MYRATIO: ratio})
+    insertRatio(ratio)
+  }, 2000)
+});
+
+
+function insertRatio(ratio) {
+  const topButtonsContainer = document.querySelector('#buttons')
+
+  topButtonsContainer.insertAdjacentHTML('beforeend', `<span>RAT: ${ratio}</span>`)
+}
+
+function calculateRatio() {
   const viewsRaw = document.querySelector('.view-count').textContent
   const views = Number(viewsRaw.replace(/\D/g, ''));
 
@@ -8,7 +26,7 @@ setTimeout(() => {
     if (likesRaw.includes(',')) {
       likesRaw = likesRaw.replace(/\D/g, '')
       likesRaw += '00'
-    // if 72 тыс.
+      // if 72 тыс.
     } else {
       likesRaw = likesRaw.replace(/\D/g, '')
       likesRaw += '000'
@@ -29,5 +47,5 @@ setTimeout(() => {
 
   const ratio = (likes * 100 / views).toFixed(1)
 
-  document.querySelector('#text.ytd-toggle-button-renderer').textContent += ` RAT: ${ratio}`
-}, 2000)
+  return ratio
+}
